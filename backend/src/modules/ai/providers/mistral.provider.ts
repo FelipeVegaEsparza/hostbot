@@ -1,39 +1,52 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import MistralClient from '@mistralai/mistralai';
 import { AIProvider, AIRequestParams, AIResponse, AIStreamChunk, AIConfig } from '../interfaces/ai-provider.interface';
 
 @Injectable()
-export class MistralProvider implements AIProvider {
+export class MistralProvider implements AIProvider, OnModuleInit {
   name = 'mistral';
-  private client: MistralClient;
+  private client: any;
   private readonly logger = new Logger(MistralProvider.name);
 
-  constructor(private configService: ConfigService) {
-    const apiKey = this.configService.get<string>('MISTRAL_API_KEY');
-    if (!apiKey) {
-      this.logger.warn('MISTRAL_API_KEY not configured');
+  constructor(private configService: ConfigService) { }
+
+  async onModuleInit() {
+    try {
+      const apiKey = this.configService.get<string>('MISTRAL_API_KEY');
+      if (!apiKey) {
+        this.logger.warn('MISTRAL_API_KEY not configured');
+      }
+
+      // Dynamic import to handle ESM-only package
+      // Using eval to bypass TypeScript transpilation of dynamic imports to require()
+      const { default: MistralClient } = await eval('import("@mistralai/mistralai")');
+      this.client = new MistralClient(apiKey || 'dummy-key');
+    } catch (error) {
+      this.logger.error('Failed to initialize Mistral client', error);
     }
-    this.client = new MistralClient(apiKey || 'dummy-key');
   }
 
   async generateResponse(params: AIRequestParams): Promise<AIResponse> {
+    if (!this.client) {
+      throw new Error('Mistral client not initialized');
+    }
+
     try {
       const messages: any[] = [];
-      
+
       if (params.systemPrompt) {
         messages.push({ role: 'system', content: params.systemPrompt });
       }
-      
+
       if (params.context && params.context.length > 0) {
         params.context.forEach((ctx, idx) => {
-          messages.push({ 
-            role: idx % 2 === 0 ? 'user' : 'assistant', 
-            content: ctx 
+          messages.push({
+            role: idx % 2 === 0 ? 'user' : 'assistant',
+            content: ctx
           });
         });
       }
-      
+
       messages.push({ role: 'user', content: params.prompt });
 
       const response = await this.client.chat({
@@ -56,22 +69,26 @@ export class MistralProvider implements AIProvider {
   }
 
   async *streamResponse(params: AIRequestParams): AsyncGenerator<AIStreamChunk> {
+    if (!this.client) {
+      throw new Error('Mistral client not initialized');
+    }
+
     try {
       const messages: any[] = [];
-      
+
       if (params.systemPrompt) {
         messages.push({ role: 'system', content: params.systemPrompt });
       }
-      
+
       if (params.context && params.context.length > 0) {
         params.context.forEach((ctx, idx) => {
-          messages.push({ 
-            role: idx % 2 === 0 ? 'user' : 'assistant', 
-            content: ctx 
+          messages.push({
+            role: idx % 2 === 0 ? 'user' : 'assistant',
+            content: ctx
           });
         });
       }
-      
+
       messages.push({ role: 'user', content: params.prompt });
 
       const stream = await this.client.chatStream({
