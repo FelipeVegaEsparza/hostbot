@@ -1,0 +1,34 @@
+🎯 COLOCA TU FAVICON AQUÍ
+========================
+
+Sube tu archivo de favicon en esta carpeta con el nombre:
+  favicon.png
+
+Especificaciones:
+  📏 Tamaño: 32x32px o 64x64px
+  📄 Formato: PNG (recomendado)
+  💾 Peso: < 10KB
+  🎨 Fondo: Transparente (opcional)
+
+Ejemplo de nombres válidos:
+  ✅ favicon.png
+  ❌ Favicon.PNG (usar minúsculas)
+  ❌ favicon.ico (usar PNG)
+
+Después de agregar tu favicon:
+1. Guarda el archivo en esta carpeta
+2. Reinicia el servidor (npm run dev)
+3. Limpia el cache del navegador (Ctrl+Shift+R)
+4. Verifica en la pestaña del navegador
+
+¿Cómo crear un favicon?
+  • Desde tu logo: Redimensiona a 64x64px
+  • Favicon.io (favicon.io)
+  • RealFaviconGenerator (realfavicongenerator.net)
+  • Canva (canva.com)
+
+El favicon aparecerá en:
+  • Pestaña del navegador
+  • Marcadores/Favoritos
+  • Historial
+  • Pantalla de inicio (móvil)

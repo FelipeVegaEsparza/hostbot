@@ -1,0 +1,187 @@
+---
+// Demo page to test the widget
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chatbot Widget Demo</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      margin: 0;
+      padding: 40px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+    
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+    
+    h1 {
+      color: #1f2937;
+      margin-bottom: 10px;
+    }
+    
+    p {
+      color: #6b7280;
+      line-height: 1.6;
+    }
+    
+    .code-block {
+      background: #f3f4f6;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 20px 0;
+      overflow-x: auto;
+    }
+    
+    code {
+      font-family: 'Monaco', 'Courier New', monospace;
+      font-size: 14px;
+      color: #1f2937;
+    }
+    
+    .options {
+      margin: 30px 0;
+    }
+    
+    .option {
+      margin: 15px 0;
+    }
+    
+    label {
+      display: block;
+      font-weight: 500;
+      margin-bottom: 5px;
+      color: #374151;
+    }
+    
+    select, input {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    
+    button {
+      background: #3b82f6;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      margin-top: 10px;
+    }
+    
+    button:hover {
+      background: #2563eb;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🤖 Chatbot Widget Demo</h1>
+    <p>This is a demonstration page for the embeddable chatbot widget. The widget appears in the bottom-right corner of the page.</p>
+    
+    <h2>Installation</h2>
+    <p>To embed this widget on your website, add the following code to your HTML:</p>
+    
+    <div class="code-block">
+      <code>
+&lt;!-- Add this script tag to your HTML --&gt;<br>
+&lt;script src="https://your-domain.com/widget.js"&gt;&lt;/script&gt;<br>
+<br>
+&lt;!-- Add the widget component --&gt;<br>
+&lt;chatbot-widget<br>
+&nbsp;&nbsp;bot-id="your-bot-id"<br>
+&nbsp;&nbsp;api-url="https://api.your-domain.com"<br>
+&nbsp;&nbsp;theme="light"<br>
+&nbsp;&nbsp;position="bottom-right"<br>
+&nbsp;&nbsp;primary-color="#3B82F6"<br>
+&nbsp;&nbsp;welcome-message="Hello! How can I help you today?"<br>
+&nbsp;&nbsp;placeholder="Type a message..."<br>
+&gt;&lt;/chatbot-widget&gt;
+      </code>
+    </div>
+    
+    <h2>Configuration Options</h2>
+    <div class="options">
+      <div class="option">
+        <label for="theme">Theme:</label>
+        <select id="theme">
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+        </select>
+      </div>
+      
+      <div class="option">
+        <label for="position">Position:</label>
+        <select id="position">
+          <option value="bottom-right">Bottom Right</option>
+          <option value="bottom-left">Bottom Left</option>
+          <option value="top-right">Top Right</option>
+          <option value="top-left">Top Left</option>
+        </select>
+      </div>
+      
+      <div class="option">
+        <label for="color">Primary Color:</label>
+        <input type="color" id="color" value="#3B82F6">
+      </div>
+      
+      <button id="apply">Apply Changes</button>
+    </div>
+    
+    <h2>Features</h2>
+    <ul>
+      <li>✅ Fully customizable appearance (theme, colors, position)</li>
+      <li>✅ Responsive design (works on mobile and desktop)</li>
+      <li>✅ Shadow DOM encapsulation (no style conflicts)</li>
+      <li>✅ Persistent conversations (localStorage)</li>
+      <li>✅ Real-time messaging</li>
+      <li>✅ Easy integration (just add a script tag)</li>
+    </ul>
+  </div>
+  
+  <!-- Widget Component -->
+  <chatbot-widget
+    id="widget"
+    bot-id="demo-bot-123"
+    api-url="http://localhost:3000"
+    theme="light"
+    position="bottom-right"
+    primary-color="#3B82F6"
+    welcome-message="Hello! How can I help you today?"
+    placeholder="Type a message..."
+  ></chatbot-widget>
+  
+  <script>
+    // Import the widget
+    import('../scripts/widget.ts');
+    
+    // Configuration controls
+    document.getElementById('apply')?.addEventListener('click', () => {
+      const widget = document.getElementById('widget');
+      const theme = document.getElementById('theme').value;
+      const position = document.getElementById('position').value;
+      const color = document.getElementById('color').value;
+      
+      widget?.setAttribute('theme', theme);
+      widget?.setAttribute('position', position);
+      widget?.setAttribute('primary-color', color);
+    });
+  </script>
+</body>
+</html>

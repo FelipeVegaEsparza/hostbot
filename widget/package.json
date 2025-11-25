@@ -1,0 +1,19 @@
+{
+  "name": "chatbot-widget",
+  "version": "1.0.0",
+  "description": "Embeddable Chatbot Widget",
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev --port 4321",
+    "build": "astro build && node build-widget.js",
+    "build:widget": "node build-widget.js",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "astro": "^4.1.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "vite": "^5.0.0"
+  }
+}

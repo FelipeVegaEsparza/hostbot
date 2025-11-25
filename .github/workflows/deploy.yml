@@ -1,0 +1,32 @@
+# GitHub Actions Workflow for Easypanel Deployment
+name: Deploy to Easypanel
+
+on:
+  push:
+    branches:
+      - main
+      - production
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Deploy to Easypanel
+        uses: easypanel-io/deploy-action@v1
+        with:
+          easypanel-url: ${{ secrets.EASYPANEL_URL }}
+          easypanel-token: ${{ secrets.EASYPANEL_TOKEN }}
+          project-name: chatbot-saas
+
+      - name: Notify deployment status
+        if: always()
+        run: |
+          if [ ${{ job.status }} == 'success' ]; then
+            echo "✅ Deployment successful!"
+          else
+            echo "❌ Deployment failed!"
+          fi

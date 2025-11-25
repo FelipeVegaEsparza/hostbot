@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prueba del Widget de Chatbot</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 40px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      margin-bottom: 30px;
+    }
+
+    h1 {
+      color: #1f2937;
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+
+    h2 {
+      color: #374151;
+      font-size: 24px;
+      margin-top: 30px;
+      margin-bottom: 15px;
+    }
+
+    p {
+      color: #6b7280;
+      line-height: 1.6;
+      margin-bottom: 15px;
+    }
+
+    .alert {
+      background: #dbeafe;
+      border-left: 4px solid #3b82f6;
+      padding: 16px;
+      border-radius: 8px;
+      margin: 20px 0;
+    }
+
+    .alert-success {
+      background: #d1fae5;
+      border-left-color: #10b981;
+    }
+
+    .alert-warning {
+      background: #fef3c7;
+      border-left-color: #f59e0b;
+    }
+
+    .alert h3 {
+      color: #1e40af;
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
+
+    .alert-success h3 {
+      color: #065f46;
+    }
+
+    .alert-warning h3 {
+      color: #92400e;
+    }
+
+    .alert p {
+      color: #1e40af;
+      margin: 0;
+      font-size: 14px;
+    }
+
+    .alert-success p {
+      color: #065f46;
+    }
+
+    .alert-warning p {
+      color: #92400e;
+    }
+
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin: 30px 0;
+    }
+
+    .feature {
+      background: #f9fafb;
+      padding: 20px;
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .feature h3 {
+      color: #1f2937;
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+
+    .feature p {
+      color: #6b7280;
+      font-size: 14px;
+      margin: 0;
+    }
+
+    .code-block {
+      background: #1f2937;
+      color: #f9fafb;
+      padding: 20px;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 20px 0;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 20px 0;
+    }
+
+    button {
+      background: #3b82f6;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    button:hover {
+      background: #2563eb;
+    }
+
+    button.secondary {
+      background: #6b7280;
+    }
+
+    button.secondary:hover {
+      background: #4b5563;
+    }
+
+    .emoji {
+      font-size: 24px;
+      margin-right: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1><span class="emoji">🤖</span>Prueba del Widget de Chatbot</h1>
+      <p>Esta página te permite probar el widget de chatbot embebible en acción.</p>
+
+      <div class="alert alert-success">
+        <h3>✅ Widget Cargado</h3>
+        <p>El widget está activo. Busca el botón de chat en la esquina inferior derecha de la pantalla.</p>
+      </div>
+
+      <div class="alert alert-warning">
+        <h3>⚠️ Nota Importante</h3>
+        <p>Las respuestas del bot son simuladas porque aún no se ha implementado WebSocket. En producción, las respuestas vendrán del AI real.</p>
+      </div>
+
+      <h2>🎯 Características del Widget</h2>
+      <div class="features">
+        <div class="feature">
+          <h3>💬 Chat Interactivo</h3>
+          <p>Interfaz de chat completa con mensajes de usuario y bot</p>
+        </div>
+        <div class="feature">
+          <h3>🎨 Personalizable</h3>
+          <p>Colores, temas y posición configurables</p>
+        </div>
+        <div class="feature">
+          <h3>📱 Responsive</h3>
+          <p>Se adapta perfectamente a móviles y desktop</p>
+        </div>
+        <div class="feature">
+          <h3>💾 Persistente</h3>
+          <p>Guarda conversaciones en localStorage</p>
+        </div>
+        <div class="feature">
+          <h3>⚡ Ligero</h3>
+          <p>Solo 12.70 KB de tamaño</p>
+        </div>
+        <div class="feature">
+          <h3>🔒 Aislado</h3>
+          <p>Shadow DOM previene conflictos de CSS</p>
+        </div>
+      </div>
+
+      <h2>🎮 Controles de Prueba</h2>
+      <p>Usa estos botones para controlar el widget programáticamente:</p>
+      
+      <div class="button-group">
+        <button onclick="openWidget()">Abrir Chat</button>
+        <button onclick="closeWidget()">Cerrar Chat</button>
+        <button onclick="toggleWidget()">Toggle Chat</button>
+        <button onclick="sendTestMessage()" class="secondary">Enviar Mensaje de Prueba</button>
+      </div>
+
+      <h2>📝 Código de Implementación</h2>
+      <p>Así es como se implementa el widget en esta página:</p>
+      
+      <div class="code-block">
+&lt;!-- Cargar el script del widget --&gt;
+&lt;script src="./dist/widget.js"&gt;&lt;/script&gt;
+
+&lt;!-- Agregar el componente --&gt;
+&lt;chatbot-widget
+  id="my-widget"
+  bot-id="845f8c41-01bf-4439-9880-0c8be35be8e0"
+  api-url="http://localhost:3000"
+  theme="light"
+  position="bottom-right"
+  primary-color="#3B82F6"
+  welcome-message="¡Hola! Soy tu asistente virtual. ¿En qué puedo ayudarte?"
+  placeholder="Escribe tu mensaje aquí..."
+&gt;&lt;/chatbot-widget&gt;
+      </div>
+
+      <h2>🔧 Configuración Actual</h2>
+      <div class="features">
+        <div class="feature">
+          <h3>Bot ID</h3>
+          <p id="bot-id-display">Cargando...</p>
+        </div>
+        <div class="feature">
+          <h3>API URL</h3>
+          <p id="api-url-display">Cargando...</p>
+        </div>
+        <div class="feature">
+          <h3>Tema</h3>
+          <p id="theme-display">Cargando...</p>
+        </div>
+        <div class="feature">
+          <h3>Posición</h3>
+          <p id="position-display">Cargando...</p>
+        </div>
+      </div>
+
+      <h2>📚 Documentación</h2>
+      <p>Para más información sobre cómo usar el widget, consulta:</p>
+      <ul style="color: #6b7280; line-height: 2; margin-left: 20px;">
+        <li><strong>README.md</strong> - Documentación completa</li>
+        <li><strong>IMPLEMENTATION.md</strong> - Resumen de implementación</li>
+        <li><strong>WIDGET-REVIEW.md</strong> - Revisión y guía de uso</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- WIDGET IMPLEMENTATION -->
+  <script src="./dist/widget.js"></script>
+  
+  <chatbot-widget
+    id="my-widget"
+    bot-id="845f8c41-01bf-4439-9880-0c8be35be8e0"
+    api-url="http://localhost:3000"
+    theme="light"
+    position="bottom-right"
+    primary-color="#3B82F6"
+    welcome-message="¡Hola! Soy tu asistente virtual. ¿En qué puedo ayudarte?"
+    placeholder="Escribe tu mensaje aquí..."
+  ></chatbot-widget>
+
+  <script>
+    // Get widget reference
+    const widget = document.getElementById('my-widget');
+
+    // Control functions
+    function openWidget() {
+      if (widget && typeof widget.open === 'function') {
+        widget.open();
+      } else {
+        alert('El widget aún no está completamente cargado. Intenta de nuevo en un momento.');
+      }
+    }
+
+    function closeWidget() {
+      if (widget && typeof widget.close === 'function') {
+        widget.close();
+      }
+    }
+
+    function toggleWidget() {
+      if (widget && typeof widget.toggle === 'function') {
+        widget.toggle();
+      }
+    }
+
+    function sendTestMessage() {
+      if (widget && typeof widget.sendMessage === 'function') {
+        widget.sendMessage('Este es un mensaje de prueba enviado programáticamente');
+        openWidget();
+      } else {
+        alert('La función sendMessage no está disponible en el widget actual.');
+      }
+    }
+
+    // Display configuration
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        document.getElementById('bot-id-display').textContent = 
+          widget.getAttribute('bot-id') || 'No configurado';
+        document.getElementById('api-url-display').textContent = 
+          widget.getAttribute('api-url') || 'No configurado';
+        document.getElementById('theme-display').textContent = 
+          widget.getAttribute('theme') || 'light';
+        document.getElementById('position-display').textContent = 
+          widget.getAttribute('position') || 'bottom-right';
+      }, 500);
+    });
+
+    // Listen to widget events
+    widget.addEventListener('open', () => {
+      console.log('✅ Widget abierto');
+    });
+
+    widget.addEventListener('close', () => {
+      console.log('❌ Widget cerrado');
+    });
+
+    widget.addEventListener('message-sent', (event) => {
+      console.log('📤 Mensaje enviado:', event.detail);
+    });
+
+    widget.addEventListener('message-received', (event) => {
+      console.log('📥 Mensaje recibido:', event.detail);
+    });
+  </script>
+</body>
+</html>

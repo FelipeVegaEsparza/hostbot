@@ -1,0 +1,81 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+backend/.env
+dashboard/.env
+whatsapp-qr-service/.env
+landing/.env
+widget/.env
+
+# Build outputs
+dist/
+build/
+.next/
+out/
+backend/dist/
+dashboard/.next/
+landing/.next/
+landing/dist/
+widget/dist/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+pnpm-debug.log*
+backend/logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.kiro/
+
+# Testing
+coverage/
+.nyc_output/
+
+# Prisma
+backend/prisma/migrations/
+
+# WhatsApp sessions
+whatsapp-qr-service/sessions/
+sessions/
+*.data.json
+
+# Docker volumes
+mysql_data/
+redis_data/
+whatsapp_sessions/
+
+# SSL certificates
+nginx/ssl/*.key
+nginx/ssl/*.crt
+nginx/ssl/*.pem
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# Lock files (opcional, descomenta si quieres commitearlos)
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml

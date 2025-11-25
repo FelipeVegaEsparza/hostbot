@@ -1,0 +1,175 @@
+# Easypanel Configuration
+# This file configures automatic deployment to Easypanel
+
+services:
+  # MySQL Database
+  - type: mysql
+    name: chatbot-mysql
+    data:
+      version: "8.0"
+      rootPassword: ${MYSQL_ROOT_PASSWORD}
+      database: chatbot_saas
+      username: chatbot_user
+      password: ${MYSQL_PASSWORD}
+    mounts:
+      - type: volume
+        name: mysql-data
+        mountPath: /var/lib/mysql
+
+  # Redis Cache
+  - type: redis
+    name: chatbot-redis
+    data:
+      version: "7-alpine"
+    mounts:
+      - type: volume
+        name: redis-data
+        mountPath: /data
+
+  # Backend API
+  - type: app
+    name: chatbot-backend
+    data:
+      projectName: chatbot-saas
+      serviceName: backend
+      source:
+        type: github
+        repo: ${GITHUB_REPO}
+        branch: main
+        path: /backend
+      build:
+        type: dockerfile
+        dockerfile: Dockerfile
+      env:
+        - key: DATABASE_URL
+          value: mysql://chatbot_user:${MYSQL_PASSWORD}@chatbot-mysql:3306/chatbot_saas
+        - key: REDIS_URL
+          value: redis://chatbot-redis:6379
+        - key: JWT_SECRET
+          value: ${JWT_SECRET}
+        - key: JWT_EXPIRATION
+          value: "24h"
+        - key: NODE_ENV
+          value: production
+        - key: ALLOWED_ORIGINS
+          value: ${FRONTEND_URL}
+        - key: OPENAI_API_KEY
+          value: ${OPENAI_API_KEY}
+      domains:
+        - name: ${API_DOMAIN}
+      deploy:
+        replicas: 1
+        command: npm run start:prod
+      ports:
+        - published: 3000
+          target: 3000
+          protocol: tcp
+      healthcheck:
+        type: http
+        path: /health
+        interval: 30s
+        timeout: 10s
+        retries: 3
+
+  # WhatsApp QR Service
+  - type: app
+    name: chatbot-whatsapp-qr
+    data:
+      projectName: chatbot-saas
+      serviceName: whatsapp-qr
+      source:
+        type: github
+        repo: ${GITHUB_REPO}
+        branch: main
+        path: /whatsapp-qr-service
+      build:
+        type: dockerfile
+        dockerfile: Dockerfile
+      env:
+        - key: PORT
+          value: "3002"
+        - key: NODE_ENV
+          value: production
+        - key: BACKEND_API_URL
+          value: http://chatbot-backend:3000
+      ports:
+        - published: 3002
+          target: 3002
+          protocol: tcp
+      mounts:
+        - type: volume
+          name: whatsapp-sessions
+          mountPath: /app/sessions
+
+  # Dashboard (Frontend)
+  - type: app
+    name: chatbot-dashboard
+    data:
+      projectName: chatbot-saas
+      serviceName: dashboard
+      source:
+        type: github
+        repo: ${GITHUB_REPO}
+        branch: main
+        path: /dashboard
+      build:
+        type: dockerfile
+        dockerfile: Dockerfile
+      env:
+        - key: NEXT_PUBLIC_API_URL
+          value: ${API_URL}
+        - key: NODE_ENV
+          value: production
+      domains:
+        - name: ${DASHBOARD_DOMAIN}
+      ports:
+        - published: 3001
+          target: 3001
+          protocol: tcp
+
+  # Landing Page
+  - type: app
+    name: chatbot-landing
+    data:
+      projectName: chatbot-saas
+      serviceName: landing
+      source:
+        type: github
+        repo: ${GITHUB_REPO}
+        branch: main
+        path: /landing
+      build:
+        type: dockerfile
+        dockerfile: Dockerfile
+      domains:
+        - name: ${LANDING_DOMAIN}
+      ports:
+        - published: 3005
+          target: 3005
+          protocol: tcp
+
+  # Widget
+  - type: app
+    name: chatbot-widget
+    data:
+      projectName: chatbot-saas
+      serviceName: widget
+      source:
+        type: github
+        repo: ${GITHUB_REPO}
+        branch: main
+        path: /widget
+      build:
+        type: dockerfile
+        dockerfile: Dockerfile
+      domains:
+        - name: ${WIDGET_DOMAIN}
+      ports:
+        - published: 4321
+          target: 80
+          protocol: tcp
+
+volumes:
+  - name: mysql-data
+  - name: redis-data
+  - name: whatsapp-sessions

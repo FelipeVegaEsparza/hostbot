@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chatbot Widget Example</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      margin: 0;
+      padding: 40px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+    
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+    
+    h1 {
+      color: #1f2937;
+      margin-bottom: 20px;
+    }
+    
+    p {
+      color: #6b7280;
+      line-height: 1.6;
+      margin-bottom: 15px;
+    }
+    
+    .note {
+      background: #eff6ff;
+      border-left: 4px solid #3b82f6;
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 4px;
+    }
+    
+    .note p {
+      color: #1e40af;
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🤖 Chatbot Widget Example</h1>
+    <p>This is a simple example page demonstrating how to embed the chatbot widget on your website.</p>
+    
+    <div class="note">
+      <p><strong>Note:</strong> The chatbot widget appears in the bottom-right corner. Click the chat icon to open it and start a conversation.</p>
+    </div>
+    
+    <p>The widget is fully customizable and can be positioned anywhere on your page. It uses Shadow DOM to prevent style conflicts with your existing CSS.</p>
+    
+    <h2>Features</h2>
+    <ul>
+      <li>Responsive design that works on all devices</li>
+      <li>Persistent conversations using localStorage</li>
+      <li>Customizable theme, colors, and position</li>
+      <li>Easy integration with just two lines of code</li>
+    </ul>
+  </div>
+  
+  <!-- Widget Integration -->
+  <!-- Step 1: Load the widget script -->
+  <script src="./widget.js"></script>
+  
+  <!-- Step 2: Add the widget component -->
+  <chatbot-widget
+    bot-id="demo-bot-123"
+    api-url="http://localhost:3000"
+    theme="light"
+    position="bottom-right"
+    primary-color="#3B82F6"
+    welcome-message="Hello! How can I help you today?"
+    placeholder="Type a message..."
+  ></chatbot-widget>
+</body>
+</html>
