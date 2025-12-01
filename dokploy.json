@@ -1,0 +1,120 @@
+{
+  "name": "chatbot-saas",
+  "version": "1.0.0",
+  "description": "SaaS de Chatbots con IA - Despliegue en Dokploy",
+  "services": {
+    "mysql": {
+      "type": "mysql",
+      "version": "8.0",
+      "database": "chatbot_saas",
+      "username": "chatbot_user",
+      "storage": "10Gi",
+      "backup": {
+        "enabled": true,
+        "schedule": "0 3 * * *",
+        "retention": 7
+      }
+    },
+    "redis": {
+      "type": "redis",
+      "version": "7-alpine",
+      "storage": "2Gi",
+      "persistence": true
+    },
+    "backend": {
+      "type": "dockerfile",
+      "context": "./backend",
+      "dockerfile": "Dockerfile",
+      "port": 3000,
+      "healthcheck": {
+        "path": "/health",
+        "interval": 30,
+        "timeout": 10,
+        "retries": 3
+      },
+      "resources": {
+        "memory": "1Gi",
+        "cpu": "1000m"
+      },
+      "env": {
+        "NODE_ENV": "production",
+        "PORT": "3000"
+      },
+      "depends_on": ["mysql", "redis"]
+    },
+    "whatsapp-qr": {
+      "type": "dockerfile",
+      "context": "./whatsapp-qr-service",
+      "dockerfile": "Dockerfile",
+      "port": 3002,
+      "resources": {
+        "memory": "512Mi",
+        "cpu": "500m"
+      },
+      "volumes": [
+        {
+          "name": "whatsapp-sessions",
+          "mountPath": "/app/sessions",
+          "size": "5Gi"
+        }
+      ],
+      "env": {
+        "NODE_ENV": "production",
+        "PORT": "3002"
+      },
+      "depends_on": ["backend", "redis"]
+    },
+    "dashboard": {
+      "type": "dockerfile",
+      "context": "./dashboard",
+      "dockerfile": "Dockerfile",
+      "port": 3001,
+      "resources": {
+        "memory": "512Mi",
+        "cpu": "500m"
+      },
+      "env": {
+        "NODE_ENV": "production"
+      },
+      "depends_on": ["backend"]
+    },
+    "widget": {
+      "type": "dockerfile",
+      "context": "./widget",
+      "dockerfile": "Dockerfile",
+      "port": 4321,
+      "resources": {
+        "memory": "256Mi",
+        "cpu": "250m"
+      },
+      "env": {
+        "NODE_ENV": "production"
+      }
+    }
+  },
+  "domains": {
+    "backend": {
+      "domain": "api.tudominio.com",
+      "ssl": true,
+      "autoSSL": true
+    },
+    "dashboard": {
+      "domain": "dashboard.tudominio.com",
+      "ssl": true,
+      "autoSSL": true
+    },
+    "widget": {
+      "domain": "widget.tudominio.com",
+      "ssl": true,
+      "autoSSL": true
+    }
+  },
+  "monitoring": {
+    "enabled": true,
+    "alerts": {
+      "cpu": 80,
+      "memory": 85,
+      "disk": 90
+    }
+  }
+}
