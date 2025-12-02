@@ -23,8 +23,8 @@
     },
     "backend": {
       "type": "dockerfile",
-      "context": "./backend",
-      "dockerfile": "Dockerfile",
+      "context": ".",
+      "dockerfile": "backend/Dockerfile",
       "port": 3000,
       "healthcheck": {
         "path": "/health",
@@ -44,8 +44,8 @@
     },
     "whatsapp-qr": {
       "type": "dockerfile",
-      "context": "./whatsapp-qr-service",
-      "dockerfile": "Dockerfile",
+      "context": ".",
+      "dockerfile": "whatsapp-qr-service/Dockerfile",
       "port": 3002,
       "resources": {
         "memory": "512Mi",
@@ -66,8 +66,8 @@
     },
     "dashboard": {
       "type": "dockerfile",
-      "context": "./dashboard",
-      "dockerfile": "Dockerfile",
+      "context": ".",
+      "dockerfile": "dashboard/Dockerfile",
       "port": 3001,
       "resources": {
         "memory": "512Mi",
@@ -80,8 +80,8 @@
     },
     "widget": {
       "type": "dockerfile",
-      "context": "./widget",
-      "dockerfile": "Dockerfile",
+      "context": ".",
+      "dockerfile": "widget/Dockerfile",
       "port": 4321,
       "resources": {
         "memory": "256Mi",

@@ -1,0 +1,81 @@
+# Dokploy Configuration
+version: "1.0"
+name: chatbot-saas
+
+services:
+  # Base de datos MySQL
+  mysql:
+    type: database
+    engine: mysql
+    version: "8.0"
+    database: chatbot_saas
+    username: chatbot_user
+    storage: 10GB
+    
+  # Redis para colas y caché
+  redis:
+    type: database
+    engine: redis
+    version: "7"
+    storage: 2GB
+
+  # API Backend
+  backend:
+    type: application
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    port: 3000
+    healthcheck:
+      path: /health
+      interval: 30s
+    resources:
+      memory: 1GB
+      cpu: 1
+    depends_on:
+      - mysql
+      - redis
+
+  # WhatsApp QR Service
+  whatsapp-qr:
+    type: application
+    build:
+      context: .
+      dockerfile: whatsapp-qr-service/Dockerfile
+    port: 3002
+    resources:
+      memory: 512MB
+      cpu: 0.5
+    volumes:
+      - whatsapp_sessions:/app/sessions
+    depends_on:
+      - backend
+      - redis
+
+  # Dashboard
+  dashboard:
+    type: application
+    build:
+      context: .
+      dockerfile: dashboard/Dockerfile
+    port: 3001
+    resources:
+      memory: 512MB
+      cpu: 0.5
+    depends_on:
+      - backend
+
+  # Widget
+  widget:
+    type: application
+    build:
+      context: .
+      dockerfile: widget/Dockerfile
+    port: 4321
+    resources:
+      memory: 256MB
+      cpu: 0.25
+
+volumes:
+  whatsapp_sessions:
+    size: 5GB
