@@ -2,11 +2,11 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-COPY package*.json ./
+COPY whatsapp-qr-service/package*.json ./
 
-RUN npm ci
+RUN npm install
 
-COPY . .
+COPY whatsapp-qr-service/ .
 
 RUN npm run build
 
