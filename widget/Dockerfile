@@ -2,11 +2,11 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-COPY package*.json ./
+COPY widget/package*.json ./
 
-RUN npm ci
+RUN npm install
 
-COPY . .
+COPY widget/ .
 
 RUN npm run build
 
