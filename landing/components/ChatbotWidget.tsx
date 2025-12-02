@@ -3,6 +3,25 @@
 import { useEffect } from 'react'
 import Script from 'next/script'
 
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      'chatbot-widget': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement> & {
+          'bot-id'?: string;
+          'api-url'?: string;
+          theme?: string;
+          position?: string;
+          'primary-color'?: string;
+          'welcome-message'?: string;
+          placeholder?: string;
+        },
+        HTMLElement
+      >;
+    }
+  }
+}
+
 export default function ChatbotWidget() {
   useEffect(() => {
     // Verificar que el widget se haya cargado
