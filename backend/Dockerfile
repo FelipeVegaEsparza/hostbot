@@ -5,12 +5,12 @@ WORKDIR /app
 # Install OpenSSL for Prisma
 RUN apk add --no-cache openssl
 
-COPY package*.json ./
-COPY prisma ./prisma/
+COPY backend/package*.json ./
+COPY backend/prisma ./prisma/
 
 RUN npm ci
 
-COPY . .
+COPY backend/ .
 
 RUN npm run prisma:generate
 RUN npm run build

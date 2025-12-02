@@ -40,8 +40,8 @@ services:
 
   api:
     build:
-      context: ./backend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: backend/Dockerfile
     container_name: chatbot-api
     restart: unless-stopped
     environment:
@@ -67,8 +67,8 @@ services:
 
   whatsapp-qr-service:
     build:
-      context: ./whatsapp-qr-service
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: whatsapp-qr-service/Dockerfile
     container_name: chatbot-whatsapp-qr
     restart: unless-stopped
     environment:
@@ -89,8 +89,8 @@ services:
 
   dashboard:
     build:
-      context: ./dashboard
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: dashboard/Dockerfile
     container_name: chatbot-dashboard
     restart: unless-stopped
     environment:
@@ -106,8 +106,8 @@ services:
 
   widget:
     build:
-      context: ./widget
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: widget/Dockerfile
     container_name: chatbot-widget
     restart: unless-stopped
     ports:
