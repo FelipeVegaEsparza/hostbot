@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@hapi/boom": "^10.0.1",
+    "@prisma/client": "^5.22.0",
     "@whiskeysockets/baileys": "^7.0.0-rc.8",
     "axios": "^1.6.5",
     "cors": "^2.8.5",
@@ -26,6 +27,7 @@
     "@types/node": "^20.10.6",
     "@types/qrcode": "^1.5.5",
     "nodemon": "^3.0.2",
+    "prisma": "^5.22.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
   }
