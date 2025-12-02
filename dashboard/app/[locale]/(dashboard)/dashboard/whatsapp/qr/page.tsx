@@ -45,30 +45,41 @@ export default function WhatsAppQRPage() {
 
   const loadSession = async (chatbotId: string) => {
     try {
+      console.log('📥 [LOAD_SESSION] Loading session for chatbot:', chatbotId)
       const response = await api.getWhatsAppQRSession(chatbotId) as any
-      console.log('Session response received:', response)
+      console.log('📥 [LOAD_SESSION] Raw response:', response)
+      console.log('📥 [LOAD_SESSION] Response type:', typeof response)
       
       // Handle response format: { success: true, data: {...} }
       const data = response.data || response
+      console.log('📥 [LOAD_SESSION] Extracted data:', data)
+      console.log('📥 [LOAD_SESSION] Data status:', data?.status)
+      console.log('📥 [LOAD_SESSION] Has qrCode:', !!data?.qrCode)
       
       // Si no hay status, tratar como si no hubiera sesión
       if (!data || !data.status) {
-        console.log('Invalid session data, treating as no session')
+        console.log('⚠️ [LOAD_SESSION] Invalid session data, treating as no session')
         setSession(null)
         setQrCode(null)
         setPolling(false)
         return
       }
       
+      console.log('✅ [LOAD_SESSION] Setting session state:', data)
       setSession(data)
+      
       if (data.status === 'QR_READY' && data.qrCode) {
+        console.log('🎯 [LOAD_SESSION] QR_READY with qrCode, setting states...')
+        console.log('🎯 [LOAD_SESSION] QR Code preview:', data.qrCode.substring(0, 50) + '...')
         setQrCode(data.qrCode)
         setPolling(true)
+        console.log('✅ [LOAD_SESSION] States set: qrCode, polling=true')
       } else if (data.status === 'CONNECTED') {
+        console.log('🔗 [LOAD_SESSION] Session is CONNECTED')
         setPolling(false)
       }
     } catch (error) {
-      console.log('No session found, showing initialize button', error)
+      console.log('❌ [LOAD_SESSION] No session found or error:', error)
       setSession(null)
       setQrCode(null)
       setPolling(false)
@@ -76,21 +87,42 @@ export default function WhatsAppQRPage() {
   }
 
   const pollForQRCode = async (chatbotId: string) => {
+    console.log('🔄 [POLLING] Starting QR code polling for chatbot:', chatbotId)
+    console.log('🔄 [POLLING] Timestamp:', new Date().toISOString())
+    
     const result = await pollUntil(
       async () => {
+        console.log('📡 [POLLING] Making API request to getWhatsAppQRSession...')
         const response = await api.getWhatsAppQRSession(chatbotId) as any
+        console.log('📡 [POLLING] Raw response received:', response)
+        console.log('📡 [POLLING] Response type:', typeof response)
+        console.log('📡 [POLLING] Response keys:', Object.keys(response || {}))
+        
         // Handle response format: { success: true, data: {...} }
-        return response.data || response
+        const data = response.data || response
+        console.log('📡 [POLLING] Extracted data:', data)
+        console.log('📡 [POLLING] Data status:', data?.status)
+        console.log('📡 [POLLING] Has qrCode:', !!data?.qrCode)
+        if (data?.qrCode) {
+          console.log('📡 [POLLING] QR Code length:', data.qrCode.length)
+          console.log('📡 [POLLING] QR Code preview:', data.qrCode.substring(0, 50) + '...')
+        }
+        
+        return data
       },
       (data) => {
+        console.log('🔍 [POLLING] Checking condition for data:', data)
         // QR code is available
         if (data.status === 'QR_READY' && data.qrCode) {
+          console.log('✅ [POLLING] Condition met: QR_READY with qrCode')
           return true
         }
         // Already connected
         if (data.status === 'CONNECTED') {
+          console.log('✅ [POLLING] Condition met: CONNECTED')
           return true
         }
+        console.log('⏳ [POLLING] Condition not met, continuing polling...')
         return false
       },
       {
@@ -101,60 +133,89 @@ export default function WhatsAppQRPage() {
       }
     )
 
+    console.log('🏁 [POLLING] Polling completed. Result:', result)
+    console.log('🏁 [POLLING] Success:', result.success)
+    console.log('🏁 [POLLING] Timed out:', result.timedOut)
+
     if (result.success && result.data) {
+      console.log('✅ [POLLING] Setting session state:', result.data)
       setSession(result.data)
+      
       if (result.data.status === 'QR_READY' && result.data.qrCode) {
+        console.log('🎯 [POLLING] QR Code received! Setting qrCode state...')
+        console.log('🎯 [POLLING] QR Code value:', result.data.qrCode.substring(0, 50) + '...')
         setQrCode(result.data.qrCode)
         setPolling(true)
         setQrLoading(false) // QR received
+        console.log('✅ [POLLING] State updated: qrCode set, polling=true, qrLoading=false')
       } else if (result.data.status === 'CONNECTED') {
+        console.log('🔗 [POLLING] Session connected')
         setPolling(false)
         setQrLoading(false) // Connected
+        console.log('✅ [POLLING] State updated: polling=false, qrLoading=false')
       }
       return true
     }
 
+    console.log('⏱️ [POLLING] Timeout occurred or no data')
     setQrLoading(false) // Timeout occurred
     return false
   }
 
   const handleInitialize = async () => {
     if (!selectedChatbot) return
+    
+    console.log('🚀 [INITIALIZE] Starting initialization for chatbot:', selectedChatbot)
+    console.log('🚀 [INITIALIZE] Timestamp:', new Date().toISOString())
+    
     setLoading(true)
     setError(null) // Clear previous errors
     setQrCode(null) // Clear previous QR code
+    console.log('🚀 [INITIALIZE] States cleared: error=null, qrCode=null, loading=true')
+    
     try {
       // If there's an existing session, disconnect it first
       if (session?.sessionId) {
-        console.log('Disconnecting existing session before initializing...')
+        console.log('🔌 [INITIALIZE] Disconnecting existing session:', session.sessionId)
         try {
           await api.disconnectWhatsAppQR(session.sessionId)
           // Wait a bit for the microservice to clean up
           await new Promise(resolve => setTimeout(resolve, 1000))
+          console.log('✅ [INITIALIZE] Existing session disconnected')
         } catch (error) {
-          console.warn('Failed to disconnect existing session, continuing anyway:', error)
+          console.warn('⚠️ [INITIALIZE] Failed to disconnect existing session, continuing anyway:', error)
         }
       }
       
+      console.log('📡 [INITIALIZE] Calling initWhatsAppQRSession API...')
       const response = await api.initWhatsAppQRSession(selectedChatbot) as any
+      console.log('📡 [INITIALIZE] Init response:', response)
+      
       // Handle response format if needed
       const sessionData = response.data || response
+      console.log('📡 [INITIALIZE] Session data:', sessionData)
       setSession(sessionData)
+      console.log('✅ [INITIALIZE] Session state set')
       
       // Set qrLoading to true after initialization
       setQrLoading(true)
+      console.log('⏳ [INITIALIZE] qrLoading set to true, starting polling...')
       
       // Start polling for QR code
       const success = await pollForQRCode(selectedChatbot)
+      console.log('🏁 [INITIALIZE] Polling finished. Success:', success)
+      
       if (!success) {
+        console.log('❌ [INITIALIZE] Polling failed, setting timeout error')
         setError(t('session.qrTimeout') || 'QR code generation timed out. Please try again.')
       }
     } catch (error) {
-      console.error('Failed to initialize session:', error)
+      console.error('❌ [INITIALIZE] Failed to initialize session:', error)
       setError(t('session.initializationFailed') || 'Failed to initialize session. Please try again.')
       setQrLoading(false) // Error occurred
     } finally {
       setLoading(false)
+      console.log('🏁 [INITIALIZE] Initialization complete. loading=false')
     }
   }
 
@@ -316,6 +377,17 @@ export default function WhatsAppQRPage() {
                   </div>
                 )}
                 
+                {(() => {
+                  console.log('🎨 [RENDER] Evaluating render conditions:')
+                  console.log('🎨 [RENDER] qrLoading:', qrLoading)
+                  console.log('🎨 [RENDER] qrCode:', qrCode ? `${qrCode.substring(0, 50)}...` : 'null')
+                  console.log('🎨 [RENDER] error:', error)
+                  console.log('🎨 [RENDER] session.status:', session.status)
+                  console.log('🎨 [RENDER] Show loading?', qrLoading && !qrCode && !error)
+                  console.log('🎨 [RENDER] Show QR?', session.status === 'QR_READY' && qrCode)
+                  return null
+                })()}
+                
                 {qrLoading && !qrCode && !error && (
                   <div className="flex flex-col items-center space-y-4 py-8">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
@@ -325,7 +397,11 @@ export default function WhatsAppQRPage() {
                   </div>
                 )}
                 
-                {session.status === 'QR_READY' && qrCode && (
+                {session.status === 'QR_READY' && qrCode && (() => {
+                  console.log('✅ [RENDER] Rendering QR Code Image!')
+                  console.log('✅ [RENDER] QR Code src:', qrCode.substring(0, 50) + '...')
+                  return null
+                })() && (
                   <div className="flex flex-col items-center space-y-4">
                     <div className="bg-white p-4 rounded-lg">
                       <Image

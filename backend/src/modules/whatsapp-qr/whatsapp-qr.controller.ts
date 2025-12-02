@@ -205,22 +205,36 @@ export class WhatsAppQRController {
   @ApiResponse({ status: 404, description: 'Session not found' })
   async getSessionByChatbotId(@Param('chatbotId') chatbotId: string): Promise<any> {
     try {
-      this.logger.log(`Get session request for chatbot: ${chatbotId}`);
+      this.logger.log(`📥 [GET_SESSION] Request for chatbot: ${chatbotId}`);
       const session = await this.whatsappQRService.getSessionByChatbotId(chatbotId);
       
       if (!session) {
+        this.logger.log(`❌ [GET_SESSION] No session found for chatbot: ${chatbotId}`);
         return {
           success: false,
           message: 'Session not found',
         };
       }
 
-      return {
+      this.logger.log(`✅ [GET_SESSION] Session found for chatbot: ${chatbotId}`);
+      this.logger.log(`📊 [GET_SESSION] Session status: ${session.status}`);
+      this.logger.log(`📊 [GET_SESSION] Has qrCode: ${!!session.qrCode}`);
+      if (session.qrCode) {
+        this.logger.log(`📊 [GET_SESSION] QR Code length: ${session.qrCode.length}`);
+        this.logger.log(`📊 [GET_SESSION] QR Code preview: ${session.qrCode.substring(0, 50)}...`);
+      }
+
+      const response = {
         success: true,
         data: session,
       };
+      
+      this.logger.log(`📤 [GET_SESSION] Sending response with keys: ${Object.keys(response)}`);
+      this.logger.log(`📤 [GET_SESSION] Response.data keys: ${Object.keys(response.data)}`);
+      
+      return response;
     } catch (error) {
-      this.logger.error('Error getting session', error);
+      this.logger.error('❌ [GET_SESSION] Error getting session', error);
       throw error;
     }
   }
