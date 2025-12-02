@@ -33,6 +33,9 @@ export class EventNotifier {
         stack: error instanceof Error ? error.stack : undefined,
         url: `${BACKEND_API_URL}/whatsapp-qr/webhook`,
         notification,
+        errorCode: (error as any)?.code,
+        errorResponse: (error as any)?.response?.data,
+        errorStatus: (error as any)?.response?.status,
       });
       // Don't throw - we don't want to break the service if backend is down
     }
