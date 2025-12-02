@@ -3,10 +3,8 @@
 import axios from 'axios';
 import { BackendNotification } from './types';
 import { logger } from './logger';
-import { dbClient } from './db';
 
 const BACKEND_API_URL = process.env.BACKEND_API_URL || 'http://localhost:3000';
-const USE_DATABASE = process.env.USE_DATABASE === 'true';
 
 export class EventNotifier {
   /**
@@ -47,48 +45,33 @@ export class EventNotifier {
    * Notify backend about QR code generation
    */
   async notifyQRCode(sessionId: string, qrCode: string): Promise<void> {
-    if (USE_DATABASE) {
-      logger.info('Using database to update QR code', { sessionId });
-      await dbClient.updateSessionQR(sessionId, qrCode);
-    } else {
-      await this.notifyBackend({
-        type: 'qr',
-        sessionId,
-        data: { qrCode },
-      });
-    }
+    await this.notifyBackend({
+      type: 'qr',
+      sessionId,
+      data: { qrCode },
+    });
   }
 
   /**
    * Notify backend about connection status
    */
   async notifyConnected(sessionId: string, phoneNumber?: string): Promise<void> {
-    if (USE_DATABASE) {
-      logger.info('Using database to update connection status', { sessionId });
-      await dbClient.updateSessionConnected(sessionId);
-    } else {
-      await this.notifyBackend({
-        type: 'connected',
-        sessionId,
-        data: { phoneNumber, connectedAt: new Date().toISOString() },
-      });
-    }
+    await this.notifyBackend({
+      type: 'connected',
+      sessionId,
+      data: { phoneNumber, connectedAt: new Date().toISOString() },
+    });
   }
 
   /**
    * Notify backend about disconnection
    */
   async notifyDisconnected(sessionId: string): Promise<void> {
-    if (USE_DATABASE) {
-      logger.info('Using database to update disconnection status', { sessionId });
-      await dbClient.updateSessionDisconnected(sessionId);
-    } else {
-      await this.notifyBackend({
-        type: 'disconnected',
-        sessionId,
-        data: { disconnectedAt: new Date().toISOString() },
-      });
-    }
+    await this.notifyBackend({
+      type: 'disconnected',
+      sessionId,
+      data: { disconnectedAt: new Date().toISOString() },
+    });
   }
 
   /**

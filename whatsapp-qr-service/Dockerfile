@@ -15,9 +15,6 @@ RUN npm install
 
 COPY whatsapp-qr-service/ .
 
-# Generate Prisma Client
-RUN npx prisma generate
-
 RUN npm run build
 
 # Create sessions directory
