@@ -30,6 +30,8 @@ export class EventNotifier {
     } catch (error) {
       logger.error('Failed to notify backend', {
         error: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined,
+        url: `${BACKEND_API_URL}/whatsapp-qr/webhook`,
         notification,
       });
       // Don't throw - we don't want to break the service if backend is down
