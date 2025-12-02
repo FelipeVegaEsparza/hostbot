@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useTranslations } from '@/components/i18n-provider'
 import { api } from '@/lib/api'
 import { Shield, User, ChevronLeft, ChevronRight, Plus } from 'lucide-react'
+import { ConfirmationModal } from '@/components/confirmation-modal'
 
 interface UserData {
   id: string
@@ -36,6 +37,18 @@ export default function UsersManagementPage() {
   const [totalPages, setTotalPages] = useState(1)
   const [changingRole, setChangingRole] = useState<string | null>(null)
   const [showCreateModal, setShowCreateModal] = useState(false)
+  const [confirmModal, setConfirmModal] = useState<{
+    isOpen: boolean
+    type: 'success' | 'error' | 'warning' | 'info'
+    title: string
+    message: string
+    onConfirm?: () => void
+  }>({
+    isOpen: false,
+    type: 'info',
+    title: '',
+    message: '',
+  })
 
   useEffect(() => {
     loadUsers()
@@ -49,7 +62,12 @@ export default function UsersManagementPage() {
       setTotalPages(response.meta.totalPages)
     } catch (error) {
       console.error('Failed to load users:', error)
-      alert(t('messages.loadUsersError'))
+      setConfirmModal({
+        isOpen: true,
+        type: 'error',
+        title: 'Error',
+        message: t('messages.loadUsersError'),
+      })
     } finally {
       setLoading(false)
     }
@@ -58,21 +76,35 @@ export default function UsersManagementPage() {
   const handleRoleChange = async (userId: string, currentRole: string) => {
     const newRole = currentRole === 'ADMIN' ? 'USER' : 'ADMIN'
     
-    if (!confirm(t('actions.changeRoleConfirm', { role: newRole }))) {
-      return
-    }
-
-    try {
-      setChangingRole(userId)
-      await api.adminUpdateUserRole(userId, newRole as 'USER' | 'ADMIN')
-      await loadUsers()
-      alert(t('messages.roleUpdatedSuccess'))
-    } catch (error: any) {
-      console.error('Failed to update user role:', error)
-      alert(error.message || t('messages.roleUpdateError'))
-    } finally {
-      setChangingRole(null)
-    }
+    setConfirmModal({
+      isOpen: true,
+      type: 'warning',
+      title: 'Confirmar cambio de rol',
+      message: t('actions.changeRoleConfirm', { role: newRole }),
+      onConfirm: async () => {
+        try {
+          setChangingRole(userId)
+          await api.adminUpdateUserRole(userId, newRole as 'USER' | 'ADMIN')
+          await loadUsers()
+          setConfirmModal({
+            isOpen: true,
+            type: 'success',
+            title: 'Éxito',
+            message: t('messages.roleUpdatedSuccess'),
+          })
+        } catch (error: any) {
+          console.error('Failed to update user role:', error)
+          setConfirmModal({
+            isOpen: true,
+            type: 'error',
+            title: 'Error',
+            message: error.message || t('messages.roleUpdateError'),
+          })
+        } finally {
+          setChangingRole(null)
+        }
+      },
+    })
   }
 
   if (loading && users.length === 0) {
@@ -203,9 +235,26 @@ export default function UsersManagementPage() {
           onSuccess={() => {
             setShowCreateModal(false)
             loadUsers()
+            setConfirmModal({
+              isOpen: true,
+              type: 'success',
+              title: 'Usuario creado',
+              message: t('messages.userCreatedSuccess'),
+            })
           }}
         />
       )}
+
+      {/* Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={confirmModal.isOpen}
+        onClose={() => setConfirmModal({ ...confirmModal, isOpen: false })}
+        onConfirm={confirmModal.onConfirm}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        type={confirmModal.type}
+        showCancel={!!confirmModal.onConfirm}
+      />
     </div>
   )
 }
@@ -234,7 +283,6 @@ function CreateUserModal({
 
     try {
       await api.register(formData.email, formData.password, formData.name)
-      alert(t('messages.userCreatedSuccess'))
       onSuccess()
     } catch (error: any) {
       console.error('Failed to create user:', error)
