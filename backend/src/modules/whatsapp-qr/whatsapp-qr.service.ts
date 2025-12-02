@@ -744,6 +744,32 @@ export class WhatsAppQRService {
       };
     }
 
+    // If status is CONNECTING and no QR code in DB, try to fetch from microservice
+    if (session.status === 'CONNECTING' && !session.qrCode) {
+      try {
+        this.logger.log(`Fetching QR code from microservice for session: ${session.sessionId}`);
+        const response = await axios.get(
+          `${this.WHATSAPP_QR_SERVICE_URL}/qr-code/${session.sessionId}`,
+          { timeout: 3000 }
+        );
+        
+        if (response.data.success && response.data.qrCode) {
+          this.logger.log(`QR code fetched from microservice, updating database`);
+          // Update database with QR code
+          const updatedSession = await this.prisma.whatsAppQRSession.update({
+            where: { id: session.id },
+            data: {
+              status: 'QR_READY',
+              qrCode: response.data.qrCode,
+            },
+          });
+          return updatedSession;
+        }
+      } catch (error) {
+        this.logger.warn('Could not fetch QR from microservice, returning session as is');
+      }
+    }
+
     // Return session with qrCode for QR_READY and CONNECTING statuses
     return session;
   }
